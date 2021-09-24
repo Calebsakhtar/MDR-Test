@@ -141,5 +141,19 @@ namespace MDR {
 			}
 			return false;
 		}
+
+		bool get_perf_minimize(const size_t& metric_id, bool& minimize) const {
+			// Given a metric id number, say whether the metric is to be minimized. Please note that
+			// the output (minimize) is an argument of this function. This function will return true
+			// if the operation is successful.
+
+			for (size_t i = 0; i < m_perf_vector.size(); i++) {
+				if (m_perf_vector[i].get_metric_id() == metric_id) {
+					minimize = m_perf_vector[i].get_metric_minimize();
+					return true;
+				}
+			}
+			return false;
+		}
 	};
 }

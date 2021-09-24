@@ -81,6 +81,11 @@ namespace MDR {
 		// if the operation is successful.
 		bool get_perf_val(const size_t& metric_id, double& perf_val) const;
 
+		// Given a metric id number, say whether the metric is to be minimized. Please note that
+		// the output (minimize) is an argument of this function. This function will return true
+		// if the operation is successful.
+		bool get_perf_minimize(const size_t& metric_id, bool& minimize) const;
+
 	};
 }
 
