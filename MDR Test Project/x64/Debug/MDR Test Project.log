@@ -1,1 +1,10 @@
-﻿
+﻿  DesignClasses.cpp
+D:\Fake Desktop\Cam Work\IIB\Project\MDR Implementation\MDR-Test\MDR Test Project\src\DesignClasses.cpp(131,25): error C2143: syntax error: missing ',' before '<'
+D:\Fake Desktop\Cam Work\IIB\Project\MDR Implementation\MDR-Test\MDR Test Project\src\DesignClasses.cpp(131,23): error C2086: 'size_t i': redefinition
+D:\Fake Desktop\Cam Work\IIB\Project\MDR Implementation\MDR-Test\MDR Test Project\src\DesignClasses.cpp(131): message : see declaration of 'i'
+D:\Fake Desktop\Cam Work\IIB\Project\MDR Implementation\MDR-Test\MDR Test Project\src\DesignClasses.cpp(131,1): error C2143: syntax error: missing ';' before '{'
+  MDR Test Project.cpp
+  MDRFunctions.cpp
+D:\Fake Desktop\Cam Work\IIB\Project\MDR Implementation\MDR-Test\MDR Test Project\src\MDRFunctions.cpp(7,1): error C2059: syntax error: '}'
+D:\Fake Desktop\Cam Work\IIB\Project\MDR Implementation\MDR-Test\MDR Test Project\src\MDRFunctions.cpp(7,1): error C2143: syntax error: missing ';' before '}'
+  Generating Code...

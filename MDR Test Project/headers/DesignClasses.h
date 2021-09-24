@@ -49,6 +49,9 @@ namespace MDR {
 		// Get the minimize bool. If true, the dominance relation is choosing the
 		// design with the minimum value of the performance metric.
 		bool get_metric_minimize() const;
+
+		// Return the value of this particular performance metric.
+		double get_metric_val() const;
 	};
 
 	class Design {
@@ -72,6 +75,11 @@ namespace MDR {
 		size_t get_design_id() const;
 
 		std::vector<PerfMetric> get_perf_vector() const;
+
+		// Given a metric id number, give the value of that performance metric. Please note that
+		// the output (perf_val) is an argument of this function. This function will return true
+		// if the operation is successful.
+		bool get_perf_val(const size_t& metric_id, double& perf_val) const;
 
 	};
 }

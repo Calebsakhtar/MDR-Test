@@ -83,6 +83,11 @@ namespace MDR {
 			design with the minimum value of the performance metric. */
 			return m_minimize;
 		}
+
+		double get_metric_val() const {
+			// Return the value of this particular performance metric.
+			return m_val;
+		}
 	};
 
 	class Design {
@@ -123,5 +128,18 @@ namespace MDR {
 			return m_perf_vector;
 		}
 
+		bool get_perf_val(const size_t& metric_id, double& perf_val) const {
+			// Given a metric id number, give the value of that performance metric. Please note that
+			// the output (perf_val) is an argument of this function. This function will return true
+			// if the operation is successful.
+
+			for (size_t i = 0; i < m_perf_vector.size(); i++) {
+				if (m_perf_vector[i].get_metric_id() == metric_id) {
+					perf_val = m_perf_vector[i].get_metric_val();
+					return true;
+				}
+			}
+			return false;
+		}
 	};
 }

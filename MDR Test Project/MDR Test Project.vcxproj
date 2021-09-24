@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="src\DesignClasses.cpp" />
     <ClCompile Include="src\MDR Test Project.cpp" />
+    <ClCompile Include="src\MDRFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\DesignClasses.h" />
