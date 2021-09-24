@@ -65,6 +65,8 @@ namespace MDR {
 		}
 
 		void set_minimize(const double& minimize) {
+			/* Set the minimize bool. If true, the dominance relation will choose the
+			design with the minimum value of the performance metric. */
 			m_minimize = minimize;
 		}
 
@@ -77,6 +79,8 @@ namespace MDR {
 		}
 
 		bool get_metric_minimize() const {
+			/* Set the minimize bool. If true, the dominance relation is choosing the
+			design with the minimum value of the performance metric. */
 			return m_minimize;
 		}
 	};
@@ -100,11 +104,14 @@ namespace MDR {
 			m_design_id = design_id;
 		}
 
+
 		void add_perf_metric(const PerfMetric& perf_metric) {
+			// Add a performance metric to the existing metric vector
 			m_perf_vector.push_back(perf_metric);
 		}
 
 		void set_perf_vector(const std::vector<PerfMetric>& perf_vector) {
+			// Replace the existing metric vector with a specified performance metric vector
 			m_perf_vector = perf_vector;
 		}
 
