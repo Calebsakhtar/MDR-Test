@@ -93,15 +93,22 @@ namespace MDR {
 	class Design {
 		std::vector<PerfMetric> m_perf_vector;
 		size_t m_design_id = 0;
+		size_t m_active_perf_id_1 = 0; // Using std::sort for dominance requires two 
+												// inputs. Hence, need to store which metrics
+												// we are using within the Design object itself.
+		size_t m_active_perf_id_2 = 0;
 
 	public:
 		// Default constructor (constructs an empty object)
 		Design() {}
 
 		// Constructor to be used for copying
-		Design(const std::vector<PerfMetric>& perf_vect, const size_t& design_id) {
+		Design(const std::vector<PerfMetric>& perf_vect, const size_t& design_id,
+			const size_t& active_perf_id_1, const size_t& active_perf_id_2) {
 			m_perf_vector = perf_vect;
 			m_design_id = design_id;
+			m_active_perf_id_1 = active_perf_id_1;
+			m_active_perf_id_2 = active_perf_id_2;
 		}
 
 		// Constructor for normal use
@@ -120,12 +127,26 @@ namespace MDR {
 			m_perf_vector = perf_vector;
 		}
 
+		void set_active_perf_metrics(const size_t& active_perf_id_1, const size_t&
+			active_perf_id_2) {
+			// Set the metrics which MDR will use to determine dominance relations
+			m_active_perf_id_1 = active_perf_id_1;
+			m_active_perf_id_2 = active_perf_id_2;
+		}
+
 		size_t get_design_id() const {
 			return m_design_id;
 		}
 
 		std::vector<PerfMetric> get_perf_vector() const {
 			return m_perf_vector;
+		}
+
+		std::vector<size_t> get_active_perf_metric_ids() const {
+			std::vector<size_t> active_perf_metric_ids;
+			active_perf_metric_ids.push_back(m_active_perf_id_1);
+			active_perf_metric_ids.push_back(m_active_perf_id_2);
+			return active_perf_metric_ids;
 		}
 
 		bool get_perf_val(const size_t& metric_id, double& perf_val) const {
@@ -152,6 +173,17 @@ namespace MDR {
 					minimize = m_perf_vector[i].get_metric_minimize();
 					return true;
 				}
+			}
+			return false;
+		}
+
+		bool get_active_perf_minimize(bool& minimize1, bool& minimize2) const {
+			// Say whether the active metrics are to be minimized. Please note that the outputs
+			// (minimize1, minimize2) are the arguments of this function. This function will return 
+			// true if the operation is successful.
+			if (get_perf_minimize(m_active_perf_id_1, minimize1) &&
+				get_perf_minimize(m_active_perf_id_2, minimize2)) {
+				return true;
 			}
 			return false;
 		}

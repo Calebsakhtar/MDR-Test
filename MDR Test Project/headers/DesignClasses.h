@@ -72,9 +72,15 @@ namespace MDR {
 		// Replace the existing metric vector with a specified performance metric vector
 		void set_perf_vector(const std::vector<PerfMetric>& perf_vector);
 
+		// Set the metrics which MDR will use to determine dominance relations
+		void set_active_perf_metrics(const size_t& active_perf_id_1, const size_t&
+			active_perf_id_2);
+
 		size_t get_design_id() const;
 
 		std::vector<PerfMetric> get_perf_vector() const;
+
+		std::vector<size_t> get_active_perf_metric_ids() const;
 
 		// Given a metric id number, give the value of that performance metric. Please note that
 		// the output (perf_val) is an argument of this function. This function will return true
@@ -86,6 +92,12 @@ namespace MDR {
 		// if the operation is successful.
 		bool get_perf_minimize(const size_t& metric_id, bool& minimize) const;
 
+		// Say whether the active metrics are to be minimized. Please note that the outputs
+		// (minimize1, minimize2) are the arguments of this function. This function will return 
+		// true if the operation is successful.
+		bool get_active_perf_minimize(bool& minimize1, bool& minimize2) const;
+
 	};
 }
+
 
