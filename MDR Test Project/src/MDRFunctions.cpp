@@ -15,8 +15,8 @@ namespace MDR {
 		assert(active_perf_ids_A[0] == active_perf_ids_B[0]);
 		assert(active_perf_ids_A[1] == active_perf_ids_B[1]);
 
-		const double first_metric_id = active_perf_ids_A[0];
-		const double second_metric_id = active_perf_ids_A[1];
+		const size_t first_metric_id = active_perf_ids_A[0];
+		const size_t second_metric_id = active_perf_ids_A[1];
 
 		// Retrieve the values of the first performance metric
 		double first_perf_val_A = 0;
@@ -65,13 +65,68 @@ namespace MDR {
 		return first_dominance && second_dominance;
 	}
 
-	bool optimize_designs(std::vector<Design>& design_list) {
+	bool is_pareto_edge(const Design& A, const Design& B) {
+		// Given two consecutive designs from a list of designs, ordered by using dominance relations,
+		// state whether these are part of the pareto front. (ONLY VALID AT THE EDGES).
+		if (!A_dominates_B(A, B) && !A_dominates_B(B, A)) {
+			return true;
+		}
+		return false;
+	}
 
-		// Check whether the input data is valid
+	bool is_pareto_mid(const Design& A, const Design& B, const Design& C) {
+		// Given three consecutive designs from a list of designs, ordered by using dominance relations,
+		// state whether these are part of the pareto front.
+		if (is_pareto_edge(A, B) && is_pareto_edge(A, C)) {
+			return true;
+		}
+		return false;
+	}
+
+	bool optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
+
+		// Check the input order matches the design metric size
+		assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
+
 		for (size_t i = 1; i < design_list.size(); i++) {
+
 			// Check all designs have the same number of performance metrics
 			assert(design_list[i - 1].get_perf_vector().size() ==
 				design_list[i].get_perf_vector().size());
 		}
+
+		std::vector<Design> result_designs = design_list; // Placeholder to store the resultant list
+
+		// Set the active performance metrics at the start
+		for (size_t j = 0; j < design_list.size(); j++) {
+			result_designs[j].set_active_perf_metrics(perf_metric_id_order[0], perf_metric_id_order[1]);
+		}
+
+		// Loop over the dominance relations
+		for (size_t i = 2; i < perf_metric_id_order.size(); i + 2) {
+
+			// Sort the results vector according to the dominance relation of the previous metrics
+			std::sort(result_designs.begin(), result_designs.end(), A_dominates_B);
+
+			// Loop over the remaining designs
+			for (size_t j = 0; j < result_designs.size(); j++) {
+
+				if (j == 0) {
+					// REMOVE(result_designs.begin(), result_designs.end(), !);
+				}
+				else if (j == result_designs.size() - 1) {
+
+				}
+
+				// Set the active performance metrics
+				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
+			}
+		}
+
+		if (perf_metric_id_order.size() % 2 != 0) {
+
+		}
+
+		return true;
 	}
 }
