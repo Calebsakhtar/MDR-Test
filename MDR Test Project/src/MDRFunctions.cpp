@@ -1,5 +1,6 @@
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <assert.h>
 #include "../headers/DesignClasses.h"
 
@@ -112,10 +113,19 @@ namespace MDR {
 			for (size_t j = 0; j < result_designs.size(); j++) {
 
 				if (j == 0) {
-					// REMOVE(result_designs.begin(), result_designs.end(), !);
+					if (!is_pareto_edge(result_designs[0], result_designs[1])) {
+						std::erase(result_designs, result_designs[0]);
+					}
 				}
 				else if (j == result_designs.size() - 1) {
-
+					if (!is_pareto_edge(result_designs[j - 1], result_designs[j])) {
+						std::erase(result_designs, result_designs[j]);
+					}
+				}
+				else {
+					if (!is_pareto_mid(result_designs[j - 1], result_designs[j], result_designs[j + 1])) {
+						std::erase(result_designs, result_designs[j]);
+					}
 				}
 
 				// Set the active performance metrics
