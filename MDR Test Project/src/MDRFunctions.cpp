@@ -49,26 +49,31 @@ namespace MDR {
 
 		bool first_dominance = false;
 		if (first_minimize_A) {
+			// If the 1st value is to be minimized, check whether A's 1st value is the smaller one.
 			first_dominance = first_perf_val_A < first_perf_val_B;
 		}
 		else {
+			// Otherwise, check whether A's 1st value is the larger one.
 			first_dominance = first_perf_val_A > first_perf_val_B;
 		}
 
 		bool second_dominance = false;
 		if (second_minimize_A) {
+			// If the 2nd value is to be minimized, check whether A's 2nd value is the smaller one.
 			second_dominance = second_perf_val_A < second_perf_val_B;
 		}
 		else {
+			// Otherwise, check whether A's 2nd value is the larger one.
 			second_dominance = second_perf_val_A > second_perf_val_B;
 		}
 
+		// MDR considers relations in pairs (this is the smart bit)
 		return first_dominance && second_dominance;
 	}
 
 	bool is_pareto_edge(const Design& A, const Design& B) {
 		// Given two consecutive designs from a list of designs, ordered by using dominance relations,
-		// state whether these are part of the pareto front. (ONLY VALID AT THE EDGES).
+		// state whether A is part of the pareto front. (ONLY VALID AT THE EDGES OF THE LIST).
 		if (!A_dominates_B(A, B) && !A_dominates_B(B, A)) {
 			return true;
 		}
@@ -77,11 +82,56 @@ namespace MDR {
 
 	bool is_pareto_mid(const Design& A, const Design& B, const Design& C) {
 		// Given three consecutive designs from a list of designs, ordered by using dominance relations,
-		// state whether these are part of the pareto front.
-		if (is_pareto_edge(A, B) && is_pareto_edge(A, C)) {
+		// state whether B is part of the pareto front.
+		if (is_pareto_edge(A, B) && is_pareto_edge(B, C)) {
+			return true;
+		}
+		else if (is_pareto_edge(A, B) && A_dominates_B(B, C)) {
 			return true;
 		}
 		return false;
+	}
+
+	void remove_non_pareto_designs(std::vector<Design>& design_list) {
+		// Given a list of designs, previously ordered by using dominance relations, remove those of which
+		// don't lie on the pareto front.
+
+		size_t i = 0;
+
+		// Case for i = 0
+		if (!is_pareto_edge(design_list[0], design_list[1])) {
+			// Make design_list an empty list if the first element is not part of the pareto front.
+			design_list.clear();
+		}
+		i++;
+
+		while (i < design_list.size()) {
+
+			if (i == design_list.size() - 1) {
+
+				// Case for the end of the list
+				if (!is_pareto_edge(design_list[i - 1], design_list[i])) {
+					design_list.pop_back();
+					//std::vector<Design>::iterator it = std::next(design_list.begin(), index);
+					//std::remove(design_list, design_list)
+					break;
+				}
+
+			}
+			else {
+				// Usual case
+				if (!is_pareto_mid(design_list[i - 1], design_list[i], design_list[i + 1])) {
+					// If the current member is not in the pareto front
+					for (size_t j = i; j < design_list.size() + 1; j++) { // +1 since we also want to
+																							// remove the current value
+						design_list.pop_back();
+					}
+					// Exit the while loop once all non-pareto members are removed.
+					break;
+				}
+			}
+			i++;
+		}
 	}
 
 	bool optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
@@ -89,9 +139,8 @@ namespace MDR {
 		// Check the input order matches the design metric size
 		assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
 
+		// Check all designs have the same number of performance metrics
 		for (size_t i = 1; i < design_list.size(); i++) {
-
-			// Check all designs have the same number of performance metrics
 			assert(design_list[i - 1].get_perf_vector().size() ==
 				design_list[i].get_perf_vector().size());
 		}
@@ -113,8 +162,8 @@ namespace MDR {
 			for (size_t j = 0; j < result_designs.size(); j++) {
 
 				if (j == 0) {
-					if (!is_pareto_edge(result_designs[0], result_designs[1])) {
-						std::erase(result_designs, result_designs[0]);
+					if (!is_pareto_edge(result_designs[j], result_designs[j + 1])) {
+						std::erase(result_designs, result_designs[j]);
 					}
 				}
 				else if (j == result_designs.size() - 1) {
@@ -131,6 +180,8 @@ namespace MDR {
 				// Set the active performance metrics
 				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
 			}
+
+
 		}
 
 		if (perf_metric_id_order.size() % 2 != 0) {
