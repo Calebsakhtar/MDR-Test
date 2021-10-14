@@ -134,7 +134,7 @@ namespace MDR {
 		}
 	}
 
-	bool optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
+	void optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
 
 		// Check the input order matches the design metric size
 		assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
@@ -147,47 +147,39 @@ namespace MDR {
 
 		std::vector<Design> result_designs = design_list; // Placeholder to store the resultant list
 
-		// Set the active performance metrics at the start
-		for (size_t j = 0; j < design_list.size(); j++) {
-			result_designs[j].set_active_perf_metrics(perf_metric_id_order[0], perf_metric_id_order[1]);
-		}
-
 		// Loop over the dominance relations
-		for (size_t i = 2; i < perf_metric_id_order.size(); i + 2) {
+		for (size_t i = 0; i < perf_metric_id_order.size() - 1; i + 2) { // Minus one to deal with the edge case
+
+			// Set the active performance metrics
+			for (size_t j = 0; j < result_designs.size(); j++) {
+				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
+			}
 
 			// Sort the results vector according to the dominance relation of the previous metrics
 			std::sort(result_designs.begin(), result_designs.end(), A_dominates_B);
 
-			// Loop over the remaining designs
-			for (size_t j = 0; j < result_designs.size(); j++) {
-
-				if (j == 0) {
-					if (!is_pareto_edge(result_designs[j], result_designs[j + 1])) {
-						std::erase(result_designs, result_designs[j]);
-					}
-				}
-				else if (j == result_designs.size() - 1) {
-					if (!is_pareto_edge(result_designs[j - 1], result_designs[j])) {
-						std::erase(result_designs, result_designs[j]);
-					}
-				}
-				else {
-					if (!is_pareto_mid(result_designs[j - 1], result_designs[j], result_designs[j + 1])) {
-						std::erase(result_designs, result_designs[j]);
-					}
-				}
-
-				// Set the active performance metrics
-				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
-			}
-
+			// Remove the non-pareto designs
+			remove_non_pareto_designs(result_designs);
 
 		}
+
+		// ***** Edge case begin *****
 
 		if (perf_metric_id_order.size() % 2 != 0) {
-
+			for (size_t j = 0; j < result_designs.size(); j++) {
+				// If the number of metrics is not even, then choose the last two design metrics.
+				// Otherwise, nothing changes.
+				size_t metric_id_size = perf_metric_id_order.size();
+				result_designs[j].set_active_perf_metrics(perf_metric_id_order[metric_id_size - 2],
+					perf_metric_id_order[metric_id_size - 1]);
+			}
 		}
 
-		return true;
+		// Remove the non-pareto designs
+		remove_non_pareto_designs(result_designs);
+
+		// ***** Edge case end *****
+
+		design_list = result_designs;
 	}
 }
