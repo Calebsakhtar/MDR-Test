@@ -80,13 +80,10 @@ namespace MDR {
 		return false;
 	}
 
-	bool is_pareto_mid(const Design& A, const Design& B, const Design& C) {
-		// Given three consecutive designs from a list of designs, ordered by using dominance relations,
-		// state whether B is part of the pareto front.
-		if (is_pareto_edge(A, B) && is_pareto_edge(B, C)) {
-			return true;
-		}
-		else if (is_pareto_edge(A, B) && A_dominates_B(B, C)) {
+	bool is_pareto_mid(const Design& A, const Design& B) {
+		// Given two consecutive designs from a list of designs, ordered by using dominance relations,
+		// state whether B is part of the pareto front given that A is part of the pareto front.
+		if (!A_dominates_B(A, B)) {
 			return true;
 		}
 		return false;
@@ -112,15 +109,13 @@ namespace MDR {
 				// Case for the end of the list
 				if (!is_pareto_edge(design_list[i - 1], design_list[i])) {
 					design_list.pop_back();
-					//std::vector<Design>::iterator it = std::next(design_list.begin(), index);
-					//std::remove(design_list, design_list)
 					break;
 				}
 
 			}
 			else {
 				// Usual case
-				if (!is_pareto_mid(design_list[i - 1], design_list[i], design_list[i + 1])) {
+				if (!is_pareto_mid(design_list[i - 1], design_list[i])) {
 					// If the current member is not in the pareto front
 					for (size_t j = i; j < design_list.size() + 1; j++) { // +1 since we also want to
 																							// remove the current value

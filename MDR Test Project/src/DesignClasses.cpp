@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "../headers/DesignClasses.h"
 
 namespace MDR {
 
