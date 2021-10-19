@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "../headers/DesignClasses.h"
+#include "../headers/MDRFunctions.h"
 
 int main()
 {

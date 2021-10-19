@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <numeric>
 #include <assert.h>
+
 #include "../headers/DesignClasses.h"
+#include "../headers/MDRFunctions.h"
 
 namespace MDR {
 	bool A_dominates_B(const Design& A, const Design& B) {
