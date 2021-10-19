@@ -1,17 +1,18 @@
-#pragma once
-
-#include <string>
+#include <iostream>
 #include <vector>
+#include <string>
 
 namespace MDR {
 
 	// Note: I am using classes and not structs for readibility
 
 	class MetricID {
+		std::string m_name;
+		size_t m_num = 0;
 
 	public:
 		// Default constructor (constructs an empty object)
-		MetricID();
+		MetricID() {};
 
 		// Intended constructor
 		MetricID(const std::string& name, const size_t& num);
@@ -24,10 +25,13 @@ namespace MDR {
 	};
 
 	class PerfMetric {
+		MetricID m_metric_id;
+		double m_val = 0;
+		bool m_minimize = true;
 
 	public:
 		// Default constructor (constructs an empty object)
-		PerfMetric();
+		PerfMetric() {}
 
 		// Intended constructor
 		PerfMetric(const MetricID& id, const double& val, const bool& minimize);
@@ -55,13 +59,20 @@ namespace MDR {
 	};
 
 	class Design {
+		std::vector<PerfMetric> m_perf_vector;
+		size_t m_design_id = 0;
+		size_t m_active_perf_id_1 = 0; // Using std::sort for dominance requires two 
+												// inputs. Hence, need to store which metrics
+												// we are using within the Design object itself.
+		size_t m_active_perf_id_2 = 0;
 
 	public:
 		// Default constructor (constructs an empty object)
 		Design() {}
 
 		// Constructor to be used for copying
-		Design(const std::vector<PerfMetric>& perf_vect, const size_t& design_id);
+		Design(const std::vector<PerfMetric>& perf_vect, const size_t& design_id,
+			const size_t& active_perf_id_1, const size_t& active_perf_id_2);
 
 		// Constructor for normal use
 		Design(const size_t& design_id);
@@ -96,6 +107,5 @@ namespace MDR {
 		// (minimize1, minimize2) are the arguments of this function. This function will return 
 		// true if the operation is successful.
 		bool get_active_perf_minimize(bool& minimize1, bool& minimize2) const;
-
 	};
 }
