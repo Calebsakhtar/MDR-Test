@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DESIGN_CLASSES_H
+#define DESIGN_CLASSES_H
 
 #include <iostream>
 #include <vector>
@@ -111,3 +112,5 @@ namespace MDR {
 		bool get_active_perf_minimize(bool& minimize1, bool& minimize2) const;
 	};
 }
+
+#endif

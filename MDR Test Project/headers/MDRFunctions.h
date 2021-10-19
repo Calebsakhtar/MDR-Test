@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MDR_FUNCTIONS_H
+#define MDR_FUNCTIONS_H
 
 #include <vector>
 #include <algorithm>
@@ -27,3 +28,5 @@ namespace MDR {
 
 	void optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order);
 }
+
+#endif
