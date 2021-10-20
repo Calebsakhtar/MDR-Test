@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../headers/DesignClasses.h"
+#include "../headers/ReadDesigns.h"
 
 void split_string(const std::string& ip_string, const std::string& delim,
 	std::vector<std::string> op_strings) {
