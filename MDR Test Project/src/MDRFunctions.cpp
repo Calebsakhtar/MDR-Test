@@ -95,40 +95,43 @@ namespace MDR {
 		// Given a list of designs, previously ordered by using dominance relations, remove those of which
 		// don't lie on the pareto front.
 
-		size_t i = 0;
+		if (design_list.size() > 1) {
+			size_t i = 0;
 
-		// Case for i = 0
-		if (!is_pareto_edge(design_list[0], design_list[1])) {
-			// Make design_list an empty list if the first element is not part of the pareto front.
-			design_list.clear();
-		}
-		i++;
-
-		while (i < design_list.size()) {
-
-			if (i == design_list.size() - 1) {
-
-				// Case for the end of the list
-				if (!is_pareto_edge(design_list[i - 1], design_list[i])) {
-					design_list.pop_back();
-					break;
-				}
-
-			}
-			else {
-				// Usual case
-				if (!is_pareto_mid(design_list[i - 1], design_list[i])) {
-					// If the current member is not in the pareto front
-					for (size_t j = i; j < design_list.size() + 1; j++) { // +1 since we also want to
-																							// remove the current value
-						design_list.pop_back();
-					}
-					// Exit the while loop once all non-pareto members are removed.
-					break;
-				}
+			// Case for i = 0
+			if (!is_pareto_edge(design_list[0], design_list[1])) {
+				// Make design_list an empty list if the first element is not part of the pareto front.
+				design_list.clear();
 			}
 			i++;
+
+			while (i < design_list.size()) {
+
+				if (i == design_list.size() - 1) {
+
+					// Case for the end of the list
+					if (!is_pareto_edge(design_list[i - 1], design_list[i])) {
+						design_list.pop_back();
+						break;
+					}
+
+				}
+				else {
+					// Usual case
+					if (!is_pareto_mid(design_list[i - 1], design_list[i])) {
+						// If the current member is not in the pareto front
+						for (size_t j = i; j < design_list.size() + 1; j++) { // +1 since we also want to
+																								// remove the current value
+							design_list.pop_back();
+						}
+						// Exit the while loop once all non-pareto members are removed.
+						break;
+					}
+				}
+				i++;
+			}
 		}
+
 	}
 
 	void optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
@@ -145,19 +148,22 @@ namespace MDR {
 		std::vector<Design> result_designs = design_list; // Placeholder to store the resultant list
 
 		// Loop over the dominance relations
-		for (size_t i = 0; i < perf_metric_id_order.size() - 1; i + 2) { // Minus one to deal with the edge case
+		for (size_t i = 0; i < perf_metric_id_order.size() - 1; i += 2) { // Minus one to deal with the edge case
 
 			// Set the active performance metrics
 			for (size_t j = 0; j < result_designs.size(); j++) {
 				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
 			}
 
+			//auto end = result_designs.begin();
+			//size_t size = result_designs.size();
+			//std::advance(end, size-1);
+
 			// Sort the results vector according to the dominance relation of the previous metrics
 			std::sort(result_designs.begin(), result_designs.end(), A_dominates_B);
 
 			// Remove the non-pareto designs
 			remove_non_pareto_designs(result_designs);
-
 		}
 
 		// ***** Edge case begin *****

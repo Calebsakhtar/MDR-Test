@@ -10,12 +10,12 @@ namespace MDR {
 	// Intended constructor
 	MetricID::MetricID(const std::string& name, const size_t& num) {
 		m_name = name;
-		size_t m_num = num;
+		m_num = num;
 	}
 
 	void MetricID::set(const std::string& name, const size_t& num) {
 		m_name = name;
-		size_t m_num = num;
+		m_num = num;
 	}
 
 	std::string MetricID::get_name() const {

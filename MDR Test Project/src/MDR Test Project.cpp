@@ -8,6 +8,26 @@
 
 int main()
 {
+	//std::string joined("lolxddd,123");
+	//std::vector<std::string> list;
+
+	//split_string(joined, ",", list);
+
+	//std::cout << list[0] << "\n";
+	//std::cout << list[1] << "\n";
+
+	std::vector<MDR::MetricID> metric_ids;
+	std::vector<MDR::Design> designs;
+
+	read_design_file(designs, metric_ids);
+	std::vector<MDR::Design> designs_two = designs;
+
+	std::vector<size_t> first_order = { 0,2,1,3 };
+	std::vector<size_t> second_order = { 3,2,1,0 };
+
+	MDR::optimize_designs(designs, first_order);
+	MDR::optimize_designs(designs_two, second_order);
+
 	std::cout << "Hello World!\n";
 }
 

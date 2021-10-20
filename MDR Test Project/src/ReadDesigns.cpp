@@ -6,7 +6,7 @@
 #include "../headers/ReadDesigns.h"
 
 void split_string(const std::string& ip_string, const std::string& delim,
-	std::vector<std::string> op_strings) {
+	std::vector<std::string>& op_strings) {
 	/*Split a string delimited by separators "delim" into a list of the split
 	string elements*/
 
@@ -26,8 +26,8 @@ void split_string(const std::string& ip_string, const std::string& delim,
 	op_strings.push_back(ip_string.substr(start, end));
 }
 
-void read_design_file(std::vector<MDR::Design> design_list,
-	std::vector<MDR::MetricID> metricid_list) {
+void read_design_file(std::vector<MDR::Design>& design_list,
+	std::vector<MDR::MetricID>& metricid_list) {
 
 	// Open the file containing the designs
 	std::ifstream design_file("designs.csv");
@@ -48,17 +48,17 @@ void read_design_file(std::vector<MDR::Design> design_list,
 	design_list.clear();
 	metricid_list.clear();
 
-	// Make a list to store the design names
-	std::vector<std::string> design_names;
+	// Make a list to store the metric names
+	std::vector<std::string> metric_names;
 
 	// Assign the design names to their vector
-	split_string(lines[0], ",", design_names);
+	split_string(lines[0], ",", metric_names);
 
 	// Make and store the MetricID object for each metric
-	for (size_t i = 0; i < design_names.size(); i++) {
-		MDR::MetricID designid(design_names[i], i);
+	for (size_t i = 0; i < metric_names.size(); i++) {
+		MDR::MetricID metricid(metric_names[i], i);
 
-		metricid_list.push_back(designid);
+		metricid_list.push_back(metricid);
 	}
 
 	// Make a list to store the minimize bools
@@ -81,7 +81,7 @@ void read_design_file(std::vector<MDR::Design> design_list,
 		// Populate the performance metric vector
 		for (size_t j = 0; j < perf_values_str.size(); j++) {
 			MDR::PerfMetric metric(metricid_list[j], std::stod(perf_values_str[j]),
-				minimize_list_str[j] == "true");
+				minimize_list_str[j] == "TRUE");
 			perf_metrics.push_back(metric);
 		}
 
