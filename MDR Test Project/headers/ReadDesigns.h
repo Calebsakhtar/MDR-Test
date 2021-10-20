@@ -1,5 +1,5 @@
-#ifndef READ_DESIGNS_H
-#define READ_DESIGNS_H
+#ifndef MDR_READ_DESIGNS_H
+#define MDR_READ_DESIGNS_H
 
 #include <fstream>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef DESIGN_CLASSES_H
-#define DESIGN_CLASSES_H
+#ifndef MDR_DESIGN_CLASSES_H
+#define MDR_DESIGN_CLASSES_H
 
 #include <iostream>
 #include <vector>
