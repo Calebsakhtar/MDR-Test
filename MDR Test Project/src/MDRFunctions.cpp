@@ -137,7 +137,7 @@ namespace MDR {
 	void optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
 
 		// Check the input order matches the design metric size
-		assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
+		//assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
 
 		// Check all designs have the same number of performance metrics
 		for (size_t i = 1; i < design_list.size(); i++) {

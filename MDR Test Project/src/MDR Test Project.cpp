@@ -22,8 +22,11 @@ int main()
 	read_design_file(designs, metric_ids);
 	std::vector<MDR::Design> designs_two = designs;
 
-	std::vector<size_t> first_order = { 0,2,1,3 };
-	std::vector<size_t> second_order = { 3,2,1,0 };
+	//std::vector<size_t> first_order = { 0,2,1,3 };
+	//std::vector<size_t> second_order = { 3,2,1,0 };
+
+	std::vector<size_t> first_order = { 0,2};
+	std::vector<size_t> second_order = { 3,2};
 
 	MDR::optimize_designs(designs, first_order);
 	MDR::optimize_designs(designs_two, second_order);
