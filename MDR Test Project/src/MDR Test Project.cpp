@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include "../headers/DesignClasses.h"
 #include "../headers/MDRFunctions.h"
 #include "../headers/ReadDesigns.h"
@@ -22,14 +23,27 @@ int main()
 	read_design_file(designs, metric_ids);
 	std::vector<MDR::Design> designs_two = designs;
 
-	//std::vector<size_t> first_order = { 0,2,1,3 };
-	//std::vector<size_t> second_order = { 3,2,1,0 };
+	std::cout << "Number of candidate designs: " << designs.size() << std::endl;
 
-	std::vector<size_t> first_order = { 0,2};
-	std::vector<size_t> second_order = { 3,2};
+	std::vector<size_t> first_order = { 0,2,1,3 };
+	std::vector<size_t> second_order = { 3,2,0,1 };
 
 	MDR::optimize_designs(designs, first_order);
 	MDR::optimize_designs(designs_two, second_order);
+
+	std::cout << "Number of designs in pareto front (#1): " << designs.size() << std::endl;
+
+	for (size_t i = 0; i < designs.size() - 1; i++) {
+		std::cout << designs[i].get_design_id() << ",";
+	}
+	std::cout << designs[designs.size() - 1].get_design_id() << std::endl;
+
+	std::cout << "Number of designs in pareto front (#2): " << designs_two.size() << std::endl;
+
+	for (size_t i = 0; i < designs_two.size() - 1; i++) {
+		std::cout << designs_two[i].get_design_id() << ",";
+	}
+	std::cout << designs_two[designs_two.size() - 1].get_design_id() << std::endl;
 
 	std::cout << "Hello World!\n";
 }
