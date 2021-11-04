@@ -26,7 +26,8 @@ namespace MDR {
 	// don't lie on the pareto front.
 	void remove_non_pareto_designs(std::vector<Design>& design_list);
 
-	void optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order);
+	std::vector<std::vector<Design>> optimize_designs(std::vector<Design>& design_list,
+		const std::vector<size_t>& perf_metric_id_order);
 }
 
 #endif

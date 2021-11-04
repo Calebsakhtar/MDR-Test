@@ -55,7 +55,6 @@ namespace MDR {
 			first_dominance = first_perf_val_A < first_perf_val_B;
 		}
 		else {
-			// Otherwise, check whether A's 1st value is the larger one.
 			first_dominance = first_perf_val_A > first_perf_val_B;
 		}
 
@@ -65,10 +64,8 @@ namespace MDR {
 			second_dominance = second_perf_val_A < second_perf_val_B;
 		}
 		else {
-			// Otherwise, check whether A's 2nd value is the larger one.
 			second_dominance = second_perf_val_A > second_perf_val_B;
 		}
-
 		// MDR considers relations in pairs (this is the smart bit)
 		return first_dominance && second_dominance;
 	}
@@ -106,35 +103,25 @@ namespace MDR {
 			i++;
 
 			while (i < design_list.size()) {
-
-				if (i == design_list.size() - 1) {
-
-					// Case for the end of the list
-					if (!is_pareto_edge(design_list[i - 1], design_list[i])) {
-						design_list.pop_back();
-						break;
-					}
-
-				}
-				else {
-					// Usual case
-					if (!is_pareto_mid(design_list[i - 1], design_list[i])) {
-						// If the current member is not in the pareto front
-						for (size_t j = i; j < design_list.size() + 1; j++) { // +1 since we also want to
+				if (!is_pareto_mid(design_list[i - 1], design_list[i])) {
+					// If the current member is not in the pareto front
+					for (size_t j = i; j < design_list.size() + 1; j++) { // +1 since we also want to
 																								// remove the current value
-							design_list.pop_back();
-						}
-						// Exit the while loop once all non-pareto members are removed.
-						break;
+						design_list.pop_back();
 					}
+					// Exit the while loop once all non-pareto members are removed.
+					break;
 				}
 				i++;
 			}
 		}
-
 	}
 
-	void optimize_designs(std::vector<Design>& design_list, const std::vector<size_t>& perf_metric_id_order) {
+	std::vector<std::vector<Design>> optimize_designs(std::vector<Design>& design_list,
+		const std::vector<size_t>& perf_metric_id_order) {
+
+		std::vector<std::vector<Design>> pareto_fronts;
+		pareto_fronts.push_back(design_list);
 
 		// Check the input order matches the design metric size
 		//assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
@@ -149,21 +136,18 @@ namespace MDR {
 
 		// Loop over the dominance relations
 		for (size_t i = 0; i < perf_metric_id_order.size() - 1; i += 2) { // Minus one to deal with the edge case
-
-			// Set the active performance metrics
+																							// Set the active performance metrics
 			for (size_t j = 0; j < result_designs.size(); j++) {
 				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
 			}
-
-			//auto end = result_designs.begin();
-			//size_t size = result_designs.size();
-			//std::advance(end, size-1);
 
 			// Sort the results vector according to the dominance relation of the previous metrics
 			std::sort(result_designs.begin(), result_designs.end(), A_dominates_B);
 
 			// Remove the non-pareto designs
 			remove_non_pareto_designs(result_designs);
+
+			pareto_fronts.push_back(result_designs);
 		}
 
 		// ***** Edge case begin *****
@@ -176,13 +160,14 @@ namespace MDR {
 				result_designs[j].set_active_perf_metrics(perf_metric_id_order[metric_id_size - 2],
 					perf_metric_id_order[metric_id_size - 1]);
 			}
+			remove_non_pareto_designs(result_designs);
+			pareto_fronts.push_back(result_designs);
 		}
-
-		// Remove the non-pareto designs
-		remove_non_pareto_designs(result_designs);
 
 		// ***** Edge case end *****
 
 		design_list = result_designs;
+
+		return pareto_fronts;
 	}
 }
