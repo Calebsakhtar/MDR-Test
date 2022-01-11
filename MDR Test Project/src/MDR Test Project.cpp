@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "../headers/DesignClasses.h"
 #include "../headers/MDRFunctions.h"
 #include "../headers/ReadDesigns.h"
@@ -22,13 +23,20 @@ int main()
 
 	std::cout << "Number of designs in pareto front (#1): " << designs.size() << std::endl;
 
+	// Create and open a text file
+	std::ofstream MyFile("pareto1.csv");
+
 	if (designs.size() > 0) {
 		for (size_t i = 0; i < designs.size() - 1; i++) {
 			std::cout << designs[i].get_design_id() << ",";
+			MyFile << std::to_string(designs[i].get_design_id()) << ",";
 		}
 		std::cout << designs[designs.size() - 1].get_design_id() << std::endl;
+		MyFile << std::to_string(designs[designs.size() - 1].get_design_id());
 	}
 
+	// Close the file
+	MyFile.close();
 
 	std::cout << "Hello World!\n";
 }
