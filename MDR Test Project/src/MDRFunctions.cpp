@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <numeric>
 #include <assert.h>
+#include <iostream>
+#include <cmath>
 
 #include "../headers/DesignClasses.h"
 #include "../headers/MDRFunctions.h"
@@ -15,8 +17,7 @@ namespace MDR {
 		const std::vector<size_t> active_perf_ids_B = B.get_active_perf_metric_ids();
 
 		// Verify that the performance ID's are the same
-		assert(active_perf_ids_A[0] == active_perf_ids_B[0]);
-		assert(active_perf_ids_A[1] == active_perf_ids_B[1]);
+		assert(active_perf_ids_A == active_perf_ids_B);
 
 		const size_t first_metric_id = active_perf_ids_A[0];
 		const size_t second_metric_id = active_perf_ids_A[1];
@@ -66,6 +67,7 @@ namespace MDR {
 		else {
 			second_dominance = second_perf_val_A > second_perf_val_B;
 		}
+
 		// MDR considers relations in pairs (this is the smart bit)
 		return first_dominance && second_dominance;
 	}
@@ -86,6 +88,85 @@ namespace MDR {
 			return true;
 		}
 		return false;
+	}
+
+	std::vector<Design> find_pareto_front(std::vector<Design>& design_list) {
+
+		//// Sort the design vector
+		//std::sort(design_list.begin(), design_list.end(), [](Design A, Design B) {
+		//	const std::vector<size_t> ids = A.get_active_perf_metric_ids();
+		//	assert(A.get_active_perf_metric_ids() == B.get_active_perf_metric_ids());
+
+		//	double perf_val_A = 0;
+		//	double perf_val_B = 0;
+		//	A.get_perf_val(ids[0], perf_val_A);
+		//	B.get_perf_val(ids[0], perf_val_B);
+
+		//	// Find out whether this value is to be minimized or maximized
+		//	bool first_minimize_A = true;
+		//	bool first_minimize_B = true;
+		//	A.get_perf_minimize(ids[0], first_minimize_A);
+		//	B.get_perf_minimize(ids[0], first_minimize_B);
+		//	assert(first_minimize_A == first_minimize_B); // Check for errors in minimize
+
+		//	if (first_minimize_A) {
+		//		return perf_val_A < perf_val_B;
+		//	}
+		//	else {
+		//		return perf_val_A > perf_val_B;
+		//	}
+		//	});
+
+		//const std::vector<size_t> ids = design_list[0].get_active_perf_metric_ids();
+		//for (size_t i = 0; i < design_list.size(); i++) {
+		//	double perf_val = 0;
+		//	design_list[i].get_perf_val(ids[0], perf_val);
+		//	std::cout << perf_val << std::endl;
+		//}
+
+		//// Extract the pareto front from the sorted design vector
+		//std::vector<Design> pareto_front = { design_list[0] }; // The first known point in the front is the 1st entry
+
+		//// Compare the remaining designs with the 1st entry, which we know lies on the pareto front
+		//for (size_t i = 1; i < design_list.size(); i++) {
+		//	if (!A_dominates_B(design_list[0], design_list[i]) && !A_dominates_B(design_list[i], design_list[0])) {
+
+		//		pareto_front.push_back(design_list[i]);
+		//	}
+		//}
+
+		// Initialise the vector containing the pareto front
+		std::vector<Design> pareto_front;
+
+		// Initialise the vector to store the ranks of the design
+		std::vector<double> dominations(design_list.size());
+		std::fill(dominations.begin(), dominations.end(), 0);
+
+		for (size_t i = 0; i < design_list.size() - 1; i++)
+		{
+			for (size_t j = i + 1; j < design_list.size(); j++) {
+
+				// Tally the number of times a design is dominated
+				if (A_dominates_B(design_list[i], design_list[j])) {
+					dominations[j] += 1;
+				}
+				else if (A_dominates_B(design_list[j], design_list[i])) {
+					dominations[i] += 1;
+				}
+			}
+		}
+
+		// Extract the minimum times a design is dominated
+		const double mindom = *std::min_element(dominations.begin(), dominations.end());
+
+		// If a design is dominated the minimum number of times, it's in the pareto front
+		for (size_t i = 0; i < dominations.size(); i++) {
+			if (std::abs(dominations[i] - mindom) < 1e-6) {
+				pareto_front.push_back(design_list[i]);
+			}
+		}
+
+		return pareto_front;
 	}
 
 	void remove_non_pareto_designs(std::vector<Design>& design_list) {
@@ -123,9 +204,6 @@ namespace MDR {
 		std::vector<std::vector<Design>> pareto_fronts;
 		pareto_fronts.push_back(design_list);
 
-		// Check the input order matches the design metric size
-		//assert(design_list[0].get_perf_vector().size() == perf_metric_id_order.size());
-
 		// Check all designs have the same number of performance metrics
 		for (size_t i = 1; i < design_list.size(); i++) {
 			assert(design_list[i - 1].get_perf_vector().size() ==
@@ -136,17 +214,14 @@ namespace MDR {
 
 		// Loop over the dominance relations
 		for (size_t i = 0; i < perf_metric_id_order.size() - 1; i += 2) { // Minus one to deal with the edge case
-																							// Set the active performance metrics
+
+																								// Set the active performance metrics
 			for (size_t j = 0; j < result_designs.size(); j++) {
 				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
 			}
 
-			// Sort the results vector according to the dominance relation of the previous metrics
-			std::sort(result_designs.begin(), result_designs.end(), A_dominates_B);
-
-			// Remove the non-pareto designs
-			remove_non_pareto_designs(result_designs);
-
+			// Find the current pareto front
+			result_designs = find_pareto_front(result_designs);
 			pareto_fronts.push_back(result_designs);
 		}
 
@@ -160,7 +235,7 @@ namespace MDR {
 				result_designs[j].set_active_perf_metrics(perf_metric_id_order[metric_id_size - 2],
 					perf_metric_id_order[metric_id_size - 1]);
 			}
-			remove_non_pareto_designs(result_designs);
+			result_designs = find_pareto_front(result_designs);
 			pareto_fronts.push_back(result_designs);
 		}
 

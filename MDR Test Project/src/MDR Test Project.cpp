@@ -9,27 +9,16 @@
 
 int main()
 {
-	//std::string joined("lolxddd,123");
-	//std::vector<std::string> list;
-
-	//split_string(joined, ",", list);
-
-	//std::cout << list[0] << "\n";
-	//std::cout << list[1] << "\n";
-
 	std::vector<MDR::MetricID> metric_ids;
 	std::vector<MDR::Design> designs;
 
 	read_design_file(designs, metric_ids);
-	std::vector<MDR::Design> designs_two = designs;
 
 	std::cout << "Number of candidate designs: " << designs.size() << std::endl;
 
 	std::vector<size_t> first_order = { 0,2 };
-	std::vector<size_t> second_order = { 0,2 };
 
 	const auto pareto_one = MDR::optimize_designs(designs, first_order);
-	const auto pareto_two = MDR::optimize_designs(designs_two, second_order);
 
 	std::cout << "Number of designs in pareto front (#1): " << designs.size() << std::endl;
 
@@ -40,14 +29,6 @@ int main()
 		std::cout << designs[designs.size() - 1].get_design_id() << std::endl;
 	}
 
-	std::cout << "Number of designs in pareto front (#2): " << designs_two.size() << std::endl;
-
-	if (designs_two.size() > 0) {
-		for (size_t i = 0; i < designs_two.size() - 1; i++) {
-			std::cout << designs_two[i].get_design_id() << ",";
-		}
-		std::cout << designs_two[designs_two.size() - 1].get_design_id() << std::endl;
-	}
 
 	std::cout << "Hello World!\n";
 }

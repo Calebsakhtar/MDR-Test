@@ -51,7 +51,7 @@ void read_design_file(std::vector<MDR::Design>& design_list,
 	// Make a list to store the metric names
 	std::vector<std::string> metric_names;
 
-	// Assign the design names to their vector
+	// Assign the design names to their vector (metric_names is updated here)
 	split_string(lines[0], ",", metric_names);
 
 	// Make and store the MetricID object for each metric
