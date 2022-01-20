@@ -12,14 +12,16 @@ int main()
 {
 	std::vector<MDR::MetricID> metric_ids;
 	std::vector<MDR::Design> designs;
+	std::vector<MDR::Design> designs2;
 
 	read_design_file(designs, metric_ids);
+	designs2 = designs;
 
 	std::cout << "Number of candidate designs: " << designs.size() << std::endl;
 
 	std::vector<size_t> first_order = { 0,2 };
 
-	const auto pareto_one = MDR::optimize_designs(designs, first_order);
+	auto pareto_one = MDR::optimize_designs(designs, first_order);
 
 	std::cout << "Number of designs in pareto front (#1): " << designs.size() << std::endl;
 
@@ -37,6 +39,28 @@ int main()
 
 	// Close the file
 	MyFile.close();
+
+	// Perform the 2nd pareto front
+	std::vector<size_t> second_order = { 1,3 };
+
+	pareto_one = MDR::optimize_designs(designs2, second_order);
+
+	std::cout << "Number of designs in pareto front (#2): " << designs2.size() << std::endl;
+
+	// Create and open a text file
+	std::ofstream MyFile2("pareto2.csv");
+
+	if (designs2.size() > 0) {
+		for (size_t i = 0; i < designs2.size() - 1; i++) {
+			std::cout << designs2[i].get_design_id() << ",";
+			MyFile2 << std::to_string(designs2[i].get_design_id()) << ",";
+		}
+		std::cout << designs2[designs2.size() - 1].get_design_id() << std::endl;
+		MyFile2 << std::to_string(designs2[designs2.size() - 1].get_design_id());
+	}
+
+	// Close the file
+	MyFile2.close();
 
 	std::cout << "Hello World!\n";
 }
