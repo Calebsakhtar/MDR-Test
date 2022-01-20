@@ -16,8 +16,8 @@ op_file.write(var_names)
 var_name_list = var_names.split(',')
 minimize_str = ''
 for i in range(len(var_name_list)-1):
-    minimize_str += "FALSE,"
-minimize_str += 'FALSE\n'
+    minimize_str += "TRUE,"
+minimize_str += 'TRUE\n'
 
 op_file.write(minimize_str)
 op_file.writelines(lines)
