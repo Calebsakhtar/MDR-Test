@@ -9,18 +9,29 @@
 #include "../headers/MDRFunctions.h"
 
 namespace MDR {
-	bool A_dominates_B_2D(const Design& A, const Design& B) {
+
+	bool A_dominates_B_2D(const Design& A, const Design& B,
+			const size_t& id1 = 0, const size_t& id2 = 0) {
 		// Given two Designs A and B, return whether A dominates B in their active
-		// performance metrics.
+		// performance metrics (if both id1 and id2 are 0) or in the input metrics.
 
-		const std::vector<size_t> active_perf_ids_A = A.get_active_perf_metric_ids();
-		const std::vector<size_t> active_perf_ids_B = B.get_active_perf_metric_ids();
+		size_t first_metric_id = 0;
+		size_t second_metric_id = 0;
 
-		// Verify that the performance ID's are the same
-		assert(active_perf_ids_A == active_perf_ids_B);
+		if ((id1 == 0) && (id2 == 0)) {
+			const std::vector<size_t> active_perf_ids_A = A.get_active_perf_metric_ids();
+			const std::vector<size_t> active_perf_ids_B = B.get_active_perf_metric_ids();
 
-		const size_t first_metric_id = active_perf_ids_A[0];
-		const size_t second_metric_id = active_perf_ids_A[1];
+			// Verify that the performance ID's are the same
+			assert(active_perf_ids_A == active_perf_ids_B);
+
+			first_metric_id = active_perf_ids_A[0];
+			second_metric_id = active_perf_ids_A[1];
+		}
+		else {
+			first_metric_id = id1;
+			second_metric_id = id2;
+		}
 
 		// Retrieve the values of the first performance metric
 		double first_perf_val_A = 0;
@@ -72,7 +83,7 @@ namespace MDR {
 		return first_dominance && second_dominance;
 	}
 
-	bool A_dominates_B_multiobj(const Design& A, const Design& B, std::vector<size_t> perf_ids = {}) {
+	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids = {}) {
 		// Given two Designs A and B, return whether A dominates B given an order perf_ids.
 		// The perf_ids must hold an even number of ids.
 
@@ -233,6 +244,36 @@ namespace MDR {
 				i++;
 			}
 		}
+	}
+
+	// Update the rank vector of both the existing designs and the new design according
+	// to layers of dominance
+	void update_ranks(Design& new_design, std::vector<Design>& existing_designs,
+		std::vector<DomRel> id_order) {
+
+		// For each existing design
+		for (size_t i = 0; i < existing_designs.size(); i++) {
+			Design current_design = existing_designs[i];
+
+			// For each dominance layer
+			for (size_t j = 0; j < id_order.size(); j++) {
+				DomRel current_rel = id_order[j];
+
+				if (A_dominates_B_2D(current_design, new_design,
+					current_rel[1], current_rel[2])) {
+					// If the new design is dominated by an existing design, increase the
+					// rank value of the new design
+					new_design.increase_rank_val(j);
+				}
+				else if (A_dominates_B_2D(new_design, current_design,
+					current_rel[1], current_rel[2])) {
+					// If the new design dominates an existing design, increase the
+					// rank value of the existing design
+					current_design.increase_rank_val(j);
+				}
+			}
+		}
+
 	}
 
 	std::vector<std::vector<Design>> optimize_designs(std::vector<Design>& design_list,

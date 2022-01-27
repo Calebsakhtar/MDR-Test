@@ -109,7 +109,7 @@ namespace MDR {
 	}
 
 	// Set the rank of the design
-	void Design::set_rank(const size_t& rank) { m_rank = rank; };
+	void Design::set_ranks(const std::vector<size_t>& ranks) { m_ranks = ranks; };
 
 	size_t Design::get_design_id() const {
 		return m_design_id;
@@ -165,5 +165,5 @@ namespace MDR {
 		return false;
 	}
 
-	size_t Design::get_rank() const { return m_rank; };
+	std::vector<size_t> Design::get_ranks() const { return m_ranks; };
 }

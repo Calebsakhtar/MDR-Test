@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <array>
 
 namespace MDR {
 
@@ -68,7 +69,7 @@ namespace MDR {
 												// inputs. Hence, need to store which metrics
 												// we are using within the Design object itself.
 		size_t m_active_perf_id_2 = 0;
-		size_t m_rank = 0;
+		std::vector<size_t> m_ranks = {}; // must be of length equal to the dominance pairs 
 
 	public:
 		// Default constructor (constructs an empty object)
@@ -92,7 +93,12 @@ namespace MDR {
 			active_perf_id_2);
 
 		// Set the rank of the design
-		void set_rank(const size_t& rank);
+		void set_ranks(const std::vector<size_t>& ranks);
+
+		// Increase the rank value
+		void increase_rank_val(const size_t& idx) {
+			m_ranks[idx] += 1;
+		}
 
 		size_t get_design_id() const;
 
@@ -116,7 +122,35 @@ namespace MDR {
 		bool get_active_perf_minimize(bool& minimize1, bool& minimize2) const;
 
 		// Get the rank of the design
-		size_t get_rank() const;
+		std::vector<size_t> get_ranks() const;
+	};
+
+	class DomRel {
+		std::array<size_t, 2> m_perf_ids{ { 0, 0 } };
+
+	public:
+		// Default constructor (constructs an empty object)
+		DomRel() {}
+
+		// Intended constructor
+		DomRel(const size_t& perf_id_1, const size_t& perf_id_2) {
+			m_perf_ids = { perf_id_1, perf_id_2 };
+		};
+
+		// Set the metrics which MDR will use to determine dominance relations
+		void set_perf_metric_ids(const size_t& perf_id_1, const size_t&
+			perf_id_2){
+			m_perf_ids = { perf_id_1, perf_id_2 };
+		};
+
+		// Get the metrics which MDR will use to determine dominance relations
+		std::array<size_t, 2> get_perf_metric_ids() const {
+			return m_perf_ids;
+		};
+
+		// Overload the index operator
+		size_t operator [](int i) const { return m_perf_ids[i]; }
+		size_t& operator [](int i) { return m_perf_ids[i]; }
 	};
 }
 
