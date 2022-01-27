@@ -163,6 +163,29 @@ namespace MDR {
 		return true;
 	}
 
+	// Check whether A dominates B according to MDR given a list of dominance relations
+	bool A_dominates_B_MDR(const Design& A, const Design& B,
+		const std::vector<DomRel>& dominance_relations) {
+
+		// Check the dominance relation layer by layer (MDR)
+		for (size_t i = 0; i < dominance_relations.size(); i++) {
+			DomRel current_dom_rel = dominance_relations[i];
+
+			if (A_dominates_B_2D(A, B, current_dom_rel[0], current_dom_rel[1])) {
+				// If A dominates B at the current dominance level, A dominates B according to MDR.
+				return true;
+			}
+			else if (A_dominates_B_2D(B, A, current_dom_rel[0], current_dom_rel[1])) {
+				// If B dominates A at the current dominance level, B dominates A according to MDR.
+				// Therefore A does not dominate B, so return false
+				return false;
+			}
+		}
+
+		// If no dominance is clear, B is not dominated by A
+		return false;
+	}
+
 	bool is_pareto_edge(const Design& A, const Design& B) {
 		// Given two consecutive designs from a list of designs, ordered by using dominance relations,
 		// state whether A is part of the pareto front. (ONLY VALID AT THE EDGES OF THE LIST).

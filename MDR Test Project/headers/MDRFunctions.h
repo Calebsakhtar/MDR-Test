@@ -19,6 +19,10 @@ namespace MDR {
 	// The perf_ids must hold an even number of ids.
 	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids);
 
+	// Check whether A dominates B according to MDR given a list of dominance relations
+	bool A_dominates_B_MDR(const Design& A, const Design& B,
+		const std::vector<DomRel>& dominance_relations);
+
 	// Given two consecutive designs from a list of designs, ordered by using dominance relations,
 	// state whether A is part of the pareto front. (ONLY VALID AT THE EDGES OF THE LIST).
 	bool is_pareto_edge(const Design& A, const Design& B);
