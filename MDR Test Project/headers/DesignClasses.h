@@ -68,6 +68,7 @@ namespace MDR {
 												// inputs. Hence, need to store which metrics
 												// we are using within the Design object itself.
 		size_t m_active_perf_id_2 = 0;
+		size_t m_rank = 0;
 
 	public:
 		// Default constructor (constructs an empty object)
@@ -90,6 +91,9 @@ namespace MDR {
 		void set_active_perf_metrics(const size_t& active_perf_id_1, const size_t&
 			active_perf_id_2);
 
+		// Set the rank of the design
+		void set_rank(const size_t& rank);
+
 		size_t get_design_id() const;
 
 		std::vector<PerfMetric> get_perf_vector() const;
@@ -110,6 +114,9 @@ namespace MDR {
 		// (minimize1, minimize2) are the arguments of this function. This function will return 
 		// true if the operation is successful.
 		bool get_active_perf_minimize(bool& minimize1, bool& minimize2) const;
+
+		// Get the rank of the design
+		size_t get_rank() const;
 	};
 }
 
