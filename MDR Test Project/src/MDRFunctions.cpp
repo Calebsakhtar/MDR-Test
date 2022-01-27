@@ -9,7 +9,7 @@
 #include "../headers/MDRFunctions.h"
 
 namespace MDR {
-	bool A_dominates_B(const Design& A, const Design& B) {
+	bool A_dominates_B_2D(const Design& A, const Design& B) {
 		// Given two Designs A and B, return whether A dominates B in their active
 		// performance metrics.
 
@@ -72,10 +72,90 @@ namespace MDR {
 		return first_dominance && second_dominance;
 	}
 
+	bool A_dominates_B_multiobj(const Design& A, const Design& B, std::vector<size_t> perf_ids = {}) {
+		// Given two Designs A and B, return whether A dominates B given an order perf_ids.
+		// The perf_ids must hold an even number of ids.
+
+		std::vector<PerfMetric> perf_metrics_A = A.get_perf_vector();
+
+		// Populate the perf_ids vector if empty
+		if (perf_ids.size() < 1){
+			for (size_t i = 1; i < perf_metrics_A.size(); i++) {
+				perf_ids.push_back(i);
+			}
+		}
+
+		// Store the result whether A dominates B in all required elements. Assume true
+		bool dominance = true;
+
+		// Loop across all performance metrics
+		for (size_t i = 1; i < perf_ids.size(); i += 2) {
+			const size_t first_metric_id = perf_ids[i-1];
+			const size_t second_metric_id = perf_ids[i];
+
+			// Retrieve the values of the first performance metric
+			double first_perf_val_A = 0;
+			double first_perf_val_B = 0;
+			assert(A.get_perf_val(first_metric_id, first_perf_val_A)); // Check OK ID
+			assert(B.get_perf_val(first_metric_id, first_perf_val_B)); // Check OK ID
+
+			// Find out whether this value is to be minimized or maximized
+			bool first_minimize_A = true;
+			bool first_minimize_B = true;
+			A.get_perf_minimize(first_metric_id, first_minimize_A);
+			B.get_perf_minimize(first_metric_id, first_minimize_B);
+			assert(first_minimize_A == first_minimize_B); // Check for errors in minimize
+
+			// Retrieve the values of the second performance metric
+			double second_perf_val_A = 0;
+			double second_perf_val_B = 0;
+			assert(A.get_perf_val(second_metric_id, second_perf_val_A)); // Check OK ID
+			assert(B.get_perf_val(second_metric_id, second_perf_val_B)); // Check OK ID
+
+			// Find out whether this value is to be minimized or maximized
+			bool second_minimize_A = true;
+			bool second_minimize_B = true;
+			A.get_perf_minimize(second_metric_id, second_minimize_A);
+			B.get_perf_minimize(second_metric_id, second_minimize_B);
+			assert(second_minimize_A == second_minimize_B); // Check for errors in minimize
+
+			// Evaluate the dominance relation
+
+			bool first_dominance = false;
+			if (first_minimize_A) {
+				// If the 1st value is to be minimized, check whether A's 1st value is the smaller one.
+				first_dominance = first_perf_val_A < first_perf_val_B;
+			}
+			else {
+				first_dominance = first_perf_val_A > first_perf_val_B;
+			}
+
+			bool second_dominance = false;
+			if (second_minimize_A) {
+				// If the 2nd value is to be minimized, check whether A's 2nd value is the smaller one.
+				second_dominance = second_perf_val_A < second_perf_val_B;
+			}
+			else {
+				second_dominance = second_perf_val_A > second_perf_val_B;
+			}
+
+			// MDR considers relations in pairs (this is the smart bit)
+			dominance == dominance && first_dominance && second_dominance;
+
+			// Don't bother looping any more if the variable does not dominate
+			if (dominance == false) {
+				return false;
+			}
+		}
+
+		// If the end has been reached, A must dominate B 
+		return true;
+	}
+
 	bool is_pareto_edge(const Design& A, const Design& B) {
 		// Given two consecutive designs from a list of designs, ordered by using dominance relations,
 		// state whether A is part of the pareto front. (ONLY VALID AT THE EDGES OF THE LIST).
-		if (!A_dominates_B(A, B) && !A_dominates_B(B, A)) {
+		if (!A_dominates_B_2D(A, B) && !A_dominates_B_2D(B, A)) {
 			return true;
 		}
 		return false;
@@ -84,56 +164,13 @@ namespace MDR {
 	bool is_pareto_mid(const Design& A, const Design& B) {
 		// Given two consecutive designs from a list of designs, ordered by using dominance relations,
 		// state whether B is part of the pareto front given that A is part of the pareto front.
-		if (!A_dominates_B(A, B)) {
+		if (!A_dominates_B_2D(A, B)) {
 			return true;
 		}
 		return false;
 	}
 
 	std::vector<Design> find_pareto_front(std::vector<Design>& design_list) {
-
-		//// Sort the design vector
-		//std::sort(design_list.begin(), design_list.end(), [](Design A, Design B) {
-		//	const std::vector<size_t> ids = A.get_active_perf_metric_ids();
-		//	assert(A.get_active_perf_metric_ids() == B.get_active_perf_metric_ids());
-
-		//	double perf_val_A = 0;
-		//	double perf_val_B = 0;
-		//	A.get_perf_val(ids[0], perf_val_A);
-		//	B.get_perf_val(ids[0], perf_val_B);
-
-		//	// Find out whether this value is to be minimized or maximized
-		//	bool first_minimize_A = true;
-		//	bool first_minimize_B = true;
-		//	A.get_perf_minimize(ids[0], first_minimize_A);
-		//	B.get_perf_minimize(ids[0], first_minimize_B);
-		//	assert(first_minimize_A == first_minimize_B); // Check for errors in minimize
-
-		//	if (first_minimize_A) {
-		//		return perf_val_A < perf_val_B;
-		//	}
-		//	else {
-		//		return perf_val_A > perf_val_B;
-		//	}
-		//	});
-
-		//const std::vector<size_t> ids = design_list[0].get_active_perf_metric_ids();
-		//for (size_t i = 0; i < design_list.size(); i++) {
-		//	double perf_val = 0;
-		//	design_list[i].get_perf_val(ids[0], perf_val);
-		//	std::cout << perf_val << std::endl;
-		//}
-
-		//// Extract the pareto front from the sorted design vector
-		//std::vector<Design> pareto_front = { design_list[0] }; // The first known point in the front is the 1st entry
-
-		//// Compare the remaining designs with the 1st entry, which we know lies on the pareto front
-		//for (size_t i = 1; i < design_list.size(); i++) {
-		//	if (!A_dominates_B(design_list[0], design_list[i]) && !A_dominates_B(design_list[i], design_list[0])) {
-
-		//		pareto_front.push_back(design_list[i]);
-		//	}
-		//}
 
 		// Initialise the vector containing the pareto front
 		std::vector<Design> pareto_front;
@@ -147,10 +184,10 @@ namespace MDR {
 			for (size_t j = i + 1; j < design_list.size(); j++) {
 
 				// Tally the number of times a design is dominated
-				if (A_dominates_B(design_list[i], design_list[j])) {
+				if (A_dominates_B_2D(design_list[i], design_list[j])) {
 					dominations[j] += 1;
 				}
-				else if (A_dominates_B(design_list[j], design_list[i])) {
+				else if (A_dominates_B_2D(design_list[j], design_list[i])) {
 					dominations[i] += 1;
 				}
 			}
