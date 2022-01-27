@@ -183,6 +183,83 @@ namespace MDR {
 
 	std::vector<Design> find_pareto_front(std::vector<Design>& design_list) {
 
+		//// Sort the design vector
+		//std::sort(design_list.begin(), design_list.end(), [](Design A, Design B) {
+		//	const std::vector<size_t> ids = A.get_active_perf_metric_ids();
+		//	assert(A.get_active_perf_metric_ids() == B.get_active_perf_metric_ids());
+
+		//	double perf_val_A = 0;
+		//	double perf_val_B = 0;
+		//	A.get_perf_val(ids[0], perf_val_A);
+		//	B.get_perf_val(ids[0], perf_val_B);
+
+		//	// Find out whether this value is to be minimized or maximized
+		//	bool first_minimize_A = true;
+		//	bool first_minimize_B = true;
+		//	A.get_perf_minimize(ids[0], first_minimize_A);
+		//	B.get_perf_minimize(ids[0], first_minimize_B);
+		//	assert(first_minimize_A == first_minimize_B); // Check for errors in minimize
+
+		//	if (first_minimize_A) {
+		//		return perf_val_A < perf_val_B;
+		//	}
+		//	else {
+		//		return perf_val_A > perf_val_B;
+		//	}
+		//	});
+
+		//const std::vector<size_t> ids = design_list[0].get_active_perf_metric_ids();
+		//for (size_t i = 0; i < design_list.size(); i++) {
+		//	double perf_val = 0;
+		//	design_list[i].get_perf_val(ids[0], perf_val);
+		//	std::cout << perf_val << std::endl;
+		//}
+
+		//// Extract the pareto front from the sorted design vector
+		//std::vector<Design> pareto_front = { design_list[0] }; // The first known point in the front is the 1st entry
+
+		//// Compare the remaining designs with the 1st entry, which we know lies on the pareto front
+		//for (size_t i = 1; i < design_list.size(); i++) {
+		//	if (!A_dominates_B(design_list[0], design_list[i]) && !A_dominates_B(design_list[i], design_list[0])) {
+
+		//		pareto_front.push_back(design_list[i]);
+		//	}
+		//}
+
+		// Initialise the vector containing the pareto front
+		std::vector<Design> pareto_front;
+
+		// Initialise the vector to store the ranks of the design
+		std::vector<double> dominations(design_list.size());
+		std::fill(dominations.begin(), dominations.end(), 0);
+
+		for (size_t i = 0; i < design_list.size() - 1; i++)
+		{
+			for (size_t j = i + 1; j < design_list.size(); j++) {
+
+				// Tally the number of times a design is dominated
+				if (A_dominates_B(design_list[i], design_list[j])) {
+					dominations[j] += 1;
+				}
+				else if (A_dominates_B(design_list[j], design_list[i])) {
+					dominations[i] += 1;
+				}
+			}
+		}
+
+		// Extract the minimum times a design is dominated
+		const double mindom = *std::min_element(dominations.begin(), dominations.end());
+
+		// If a design is dominated the minimum number of times, it's in the pareto front
+		for (size_t i = 0; i < dominations.size(); i++) {
+			if (std::abs(dominations[i] - mindom) < 1e-6) {
+				pareto_front.push_back(design_list[i]);
+			}
+		}
+
+		return pareto_front;
+	}
+
 		// Initialise the vector containing the pareto front
 		std::vector<Design> pareto_front;
 
@@ -250,7 +327,6 @@ namespace MDR {
 	// to layers of dominance
 	void update_ranks(Design& new_design, std::vector<Design>& existing_designs,
 		std::vector<DomRel> id_order) {
-
 		// For each existing design
 		for (size_t i = 0; i < existing_designs.size(); i++) {
 			Design current_design = existing_designs[i];
@@ -273,7 +349,6 @@ namespace MDR {
 				}
 			}
 		}
-
 	}
 
 	std::vector<std::vector<Design>> optimize_designs(std::vector<Design>& design_list,
