@@ -108,6 +108,9 @@ namespace MDR {
 		m_active_perf_id_2 = active_perf_id_2;
 	}
 
+	// Set the rank of the design
+	void Design::set_ranks(const std::vector<size_t>& ranks) { m_ranks = ranks; };
+
 	size_t Design::get_design_id() const {
 		return m_design_id;
 	}
@@ -161,4 +164,6 @@ namespace MDR {
 		}
 		return false;
 	}
+
+	std::vector<size_t> Design::get_ranks() const { return m_ranks; };
 }
