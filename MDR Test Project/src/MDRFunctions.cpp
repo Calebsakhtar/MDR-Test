@@ -11,7 +11,7 @@
 namespace MDR {
 
 	bool A_dominates_B_2D(const Design& A, const Design& B,
-			const size_t& id1 = 0, const size_t& id2 = 0) {
+			const size_t& id1, const size_t& id2) {
 		// Given two Designs A and B, return whether A dominates B in their active
 		// performance metrics (if both id1 and id2 are 0) or in the input metrics.
 
@@ -83,7 +83,7 @@ namespace MDR {
 		return first_dominance && second_dominance;
 	}
 
-	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids = {}) {
+	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids) {
 		// Given two Designs A and B, return whether A dominates B given an order perf_ids.
 		// The perf_ids must hold an even number of ids.
 
