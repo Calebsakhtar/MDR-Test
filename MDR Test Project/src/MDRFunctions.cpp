@@ -60,23 +60,24 @@ namespace MDR {
 		assert(second_minimize_A == second_minimize_B); // Check for errors in minimize
 
 		// Evaluate the dominance relation
+		const double tol = 1e6;
 
 		bool first_dominance = false;
 		if (first_minimize_A) {
 			// If the 1st value is to be minimized, check whether A's 1st value is the smaller one.
-			first_dominance = first_perf_val_A < first_perf_val_B;
+			first_dominance = tol < (first_perf_val_B - first_perf_val_A);
 		}
 		else {
-			first_dominance = first_perf_val_A > first_perf_val_B;
+			first_dominance = (first_perf_val_A - first_perf_val_B) > tol;
 		}
 
 		bool second_dominance = false;
 		if (second_minimize_A) {
 			// If the 2nd value is to be minimized, check whether A's 2nd value is the smaller one.
-			second_dominance = second_perf_val_A < second_perf_val_B;
+			second_dominance = tol < (second_perf_val_B - second_perf_val_A);
 		}
 		else {
-			second_dominance = second_perf_val_A > second_perf_val_B;
+			second_dominance = (second_perf_val_A - second_perf_val_B) > tol;
 		}
 
 		// MDR considers relations in pairs (this is the smart bit)
@@ -131,23 +132,24 @@ namespace MDR {
 			assert(second_minimize_A == second_minimize_B); // Check for errors in minimize
 
 			// Evaluate the dominance relation
+			const double tol = 1e6;
 
 			bool first_dominance = false;
 			if (first_minimize_A) {
 				// If the 1st value is to be minimized, check whether A's 1st value is the smaller one.
-				first_dominance = first_perf_val_A < first_perf_val_B;
+				first_dominance = tol < (first_perf_val_B - first_perf_val_A);
 			}
 			else {
-				first_dominance = first_perf_val_A > first_perf_val_B;
+				first_dominance = (first_perf_val_A - first_perf_val_B) > tol;
 			}
 
 			bool second_dominance = false;
 			if (second_minimize_A) {
 				// If the 2nd value is to be minimized, check whether A's 2nd value is the smaller one.
-				second_dominance = second_perf_val_A < second_perf_val_B;
+				second_dominance = tol < (second_perf_val_B - second_perf_val_A);
 			}
 			else {
-				second_dominance = second_perf_val_A > second_perf_val_B;
+				second_dominance = (second_perf_val_A - second_perf_val_B) > tol;
 			}
 
 			// MDR considers relations in pairs (this is the smart bit)
