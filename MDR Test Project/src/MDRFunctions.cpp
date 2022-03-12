@@ -282,13 +282,13 @@ namespace MDR {
 				DomRel current_rel = id_order[j];
 
 				if (A_dominates_B_2D(current_design, new_design,
-					current_rel[1], current_rel[2])) {
+					current_rel[0], current_rel[1])) {
 					// If the new design is dominated by an existing design, increase the
 					// rank value of the new design
 					new_design.increase_rank_val(j);
 				}
 				else if (A_dominates_B_2D(new_design, current_design,
-					current_rel[1], current_rel[2])) {
+					current_rel[0], current_rel[1])) {
 					// If the new design dominates an existing design, increase the
 					// rank value of the existing design
 					current_design.increase_rank_val(j);
