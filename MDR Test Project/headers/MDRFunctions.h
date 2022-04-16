@@ -11,12 +11,6 @@
 namespace MDR {
 
 	//// DEPRECATED
-	//// Given two Designs A and B, return whether A dominates B in their active
-	//// performance metrics (if both id1 and id2 are 0) or in the input metrics.
-	//bool A_dominates_B_2D(const Design& A, const Design& B,
-	//	const size_t& id1 = 0, const size_t& id2 = 0);
-
-	//// DEPRECATED
 	//// Given two consecutive designs from a list of designs, ordered by using dominance relations,
 	//// state whether A is part of the pareto front. (ONLY VALID AT THE EDGES OF THE LIST).
 	//bool is_pareto_edge(const Design& A, const Design& B);
@@ -35,6 +29,12 @@ namespace MDR {
 	//// state whether B is part of the pareto front given that A is part of the pareto front.
 	//bool is_pareto_mid(const Design& A, const Design& B);
 
+	// DEPRECATED
+	// Given two Designs A and B, return whether A dominates B in their active
+	// performance metrics (if both id1 and id2 are 0) or in the input metrics.
+	bool A_dominates_B_2D(const Design& A, const Design& B,
+		const size_t& id1 = 0, const size_t& id2 = 0);
+	
 	// Given two Designs A and B, return whether A dominates B given an order perf_ids.
 	// The perf_ids must hold an even number of ids.
 	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids = {});
