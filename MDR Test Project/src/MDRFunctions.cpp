@@ -204,7 +204,10 @@ namespace MDR {
 		return false;
 	}
 
-	std::vector<Design> find_pareto_front(std::vector<Design>& design_list) {
+	std::vector<Design> find_pareto_front(std::vector<Design>& design_list, const DomRel& dom_rel) {
+
+		// Initialise the vector containing the dominance relations
+		std::vector<DomRel> dom_rels = { dom_rel };
 
 		// Initialise the vector containing the pareto front
 		std::vector<Design> pareto_front;
@@ -218,10 +221,10 @@ namespace MDR {
 			for (size_t j = i + 1; j < design_list.size(); j++) {
 
 				// Tally the number of times a design is dominated
-				if (A_dominates_B_2D(design_list[i], design_list[j])) {
+				if (A_dominates_B_MDR(design_list[i], design_list[j], dom_rels)) {
 					dominations[j] += 1;
 				}
-				else if (A_dominates_B_2D(design_list[j], design_list[i])) {
+				else if (A_dominates_B_MDR(design_list[j], design_list[i], dom_rels)) {
 					dominations[i] += 1;
 				}
 			}
@@ -297,8 +300,8 @@ namespace MDR {
 		}
 	}
 
-	std::vector<std::vector<Design>> optimize_designs(std::vector<Design>& design_list,
-		const std::vector<size_t>& perf_metric_id_order) {
+	std::vector<std::vector<Design>> optimize_designs(const std::vector<Design>& design_list,
+		const std::vector<DomRel>& dom_rels) {
 
 		std::vector<std::vector<Design>> pareto_fronts;
 		pareto_fronts.push_back(design_list);
@@ -312,35 +315,12 @@ namespace MDR {
 		std::vector<Design> result_designs = design_list; // Placeholder to store the resultant list
 
 		// Loop over the dominance relations
-		for (size_t i = 0; i < perf_metric_id_order.size() - 1; i += 2) { // Minus one to deal with the edge case
-
-																								// Set the active performance metrics
-			for (size_t j = 0; j < result_designs.size(); j++) {
-				result_designs[j].set_active_perf_metrics(perf_metric_id_order[i], perf_metric_id_order[i + 1]);
-			}
+		for (size_t i = 0; i < dom_rels.size(); i += 2) { // Minus one to deal with the edge case
 
 			// Find the current pareto front
-			result_designs = find_pareto_front(result_designs);
+			result_designs = find_pareto_front(result_designs, dom_rels[i]);
 			pareto_fronts.push_back(result_designs);
 		}
-
-		// ***** Edge case begin *****
-
-		if (perf_metric_id_order.size() % 2 != 0) {
-			for (size_t j = 0; j < result_designs.size(); j++) {
-				// If the number of metrics is not even, then choose the last two design metrics.
-				// Otherwise, nothing changes.
-				size_t metric_id_size = perf_metric_id_order.size();
-				result_designs[j].set_active_perf_metrics(perf_metric_id_order[metric_id_size - 2],
-					perf_metric_id_order[metric_id_size - 1]);
-			}
-			result_designs = find_pareto_front(result_designs);
-			pareto_fronts.push_back(result_designs);
-		}
-
-		// ***** Edge case end *****
-
-		design_list = result_designs;
 
 		return pareto_fronts;
 	}
