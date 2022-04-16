@@ -15,23 +15,8 @@ namespace MDR {
 		// Given two Designs A and B, return whether A dominates B in their active
 		// performance metrics (if both id1 and id2 are 0) or in the input metrics.
 
-		size_t first_metric_id = 0;
-		size_t second_metric_id = 0;
-
-		if ((id1 == 0) && (id2 == 0)) {
-			const std::vector<size_t> active_perf_ids_A = A.get_active_perf_metric_ids();
-			const std::vector<size_t> active_perf_ids_B = B.get_active_perf_metric_ids();
-
-			// Verify that the performance ID's are the same
-			assert(active_perf_ids_A == active_perf_ids_B);
-
-			first_metric_id = active_perf_ids_A[0];
-			second_metric_id = active_perf_ids_A[1];
-		}
-		else {
-			first_metric_id = id1;
-			second_metric_id = id2;
-		}
+		size_t first_metric_id = id1;
+		size_t second_metric_id = id2;
 
 		// Retrieve the values of the first performance metric
 		double first_perf_val_A = 0;
