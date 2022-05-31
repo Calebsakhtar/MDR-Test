@@ -5,6 +5,9 @@
 #include "../headers/DesignClasses.h"
 #include "../headers/ReadDesigns.h"
 
+
+// The code in this file is of my own design unless otherwise stated
+
 void split_string(const std::string& ip_string, const std::string& delim,
 	std::vector<std::string>& op_strings) {
 	/*Split a string delimited by separators "delim" into a list of the split
@@ -32,6 +35,9 @@ void split_string(const std::string& ip_string, const std::string& delim,
 
 void read_design_file(std::vector<MDR::Design>& design_list,
 	std::vector<MDR::MetricID>& metricid_list) {
+	// Reads a design file in this repo's proprietary format
+	// A section of this code has been adapted from
+	// https://stackoverflow.com/a/13035743
 
 	// Open the file containing the designs
 	std::ifstream design_file("designs.csv");
@@ -42,7 +48,8 @@ void read_design_file(std::vector<MDR::Design>& design_list,
 	// Make a vector to store the lines
 	std::vector<std::string> lines;
 
-	// Read all lines
+	// Read all lines. This snippet of code has been adapted from
+	// https://stackoverflow.com/a/13035743
 	while (std::getline(design_file, line)) {
 		lines.push_back(line);
 	}
