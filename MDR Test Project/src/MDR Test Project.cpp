@@ -10,6 +10,9 @@
 
 int main()
 {
+
+	// DEPRECATED TEST, DO NOT USE
+
 	std::vector<MDR::MetricID> metric_ids;
 	std::vector<MDR::Design> designs;
 	std::vector<MDR::Design> designs2;
