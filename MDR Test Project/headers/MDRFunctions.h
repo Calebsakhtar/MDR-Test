@@ -44,7 +44,8 @@ namespace MDR {
 		const size_t& id1 = 0, const size_t& id2 = 0);
 	
 	// Given two Designs A and B, return whether A dominates B given an order perf_ids.
-	// The perf_ids must hold an even number of ids.
+	// The perf_ids must hold an even number of ids
+	// MO concept from https://en.wikipedia.org/wiki/Multi-objective_optimization
 	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids = {});
 
 	// Check whether A dominates B according to MDR given a list of dominance relations

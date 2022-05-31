@@ -84,7 +84,8 @@ namespace MDR {
 	}
 
 	// Given two Designs A and B, return whether A dominates B given an order perf_ids.
-	// The perf_ids must hold an even number of ids (of my own design).
+	// The perf_ids must hold an even number of ids
+	// MO concept from https://en.wikipedia.org/wiki/Multi-objective_optimization
 	bool A_dominates_B_MO(const Design& A, const Design& B, std::vector<size_t> perf_ids) {
 
 		std::vector<PerfMetric> perf_metrics_A = A.get_perf_vector();

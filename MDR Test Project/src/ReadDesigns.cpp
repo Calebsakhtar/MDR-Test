@@ -5,6 +5,9 @@
 #include "../headers/DesignClasses.h"
 #include "../headers/ReadDesigns.h"
 
+
+// The code in this file is of my own design unless otherwise stated
+
 void split_string(const std::string& ip_string, const std::string& delim,
 	std::vector<std::string>& op_strings) {
 	/*Split a string delimited by separators "delim" into a list of the split

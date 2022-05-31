@@ -7,6 +7,8 @@
 
 #include "../headers/DesignClasses.h"
 
+// The code in this file is of my own design unless otherwise stated
+
 /*Split a string delimited by separators "delim" into a list of the split
 string elements.
 

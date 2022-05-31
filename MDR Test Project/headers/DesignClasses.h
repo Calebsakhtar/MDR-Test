@@ -8,6 +8,14 @@
 
 namespace MDR {
 
+	// The code in this file is of my own design, but the attributes and methods are
+	// meant to allow for the implementation of the algorithms in the following paper:
+	//
+	// L. W. Cook, K. E. Willcox, and J. P. Jarrett,
+	// “Design optimization using multiple dominance relations,”
+	// International Journal for Numerical Methods in Engineering, vol. 121,
+	// no. 11, pp. 2481–2502, 2020. doi: https://doi.org/10.1002/nme.6316.
+	// 
 	// Note: I am using classes and not structs for readibility
 
 	class MetricID {
